@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivyan Triplink - Book Your Flights</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #1a73e8;
+            --secondary: #0d47a1;
+            --accent: #ff6d00;
+            --light: #f5f7fa;
+            --dark: #263238;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --gray: #78909c;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0f7fa, #bbdefb);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover, nav a.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e65100;
+        }
+
+        /* Page Content Container */
+        .page-container {
+            flex: 1;
+            display: none;
+            padding: 20px 0;
+        }
+
+        .page-container.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 60px 0;
+            text-align: center;
+            background: url('https://images.unsplash.com/photo-1500835556837-99ac94a94552?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80') no-repeat center center/cover;
+            position: relative;
+            color: white;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 40px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 0 0 20px 20px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+        }
+
+        /* Booking Widget */
+        .booking-widget {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            margin-top: 40px;
+        }
+
+        .widget-header {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+        }
+
+        .trip-option {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .trip-option.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .booking-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-btn {
+            grid-column: span 2;
+            margin-top: 10px;
+        }
+
+        /* Popular Destinations */
+        .section {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .destinations {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .destination-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .destination-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .destination-card:hover .card-image img {
+            transform: scale(1.1);
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-content h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .card-content p {
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+
+        .price {
+            font-size: 1.4rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        /* Features */
+        .features {
+            background: var(--light);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 30px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        /* Flight Listings */
+        .flights {
+            background: white;
+        }
+
+        .flight-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .flight-info {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .airline-logo {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light);
+            border-radius: 50%;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .flight-details {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .flight-time {
+            text-align: center;
+        }
+
+        .flight-time .time {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .flight-time .date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .flight-route {
+            text-align: center;
+            position: relative;
+        }
+
+        .flight-route::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+
+        .flight-route::after {
+            content: '✈';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 0 10px;
+            z-index: 2;
+            color: var(--primary);
+        }
+
+        .route-duration {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .flight-price {
+            text-align: right;
+        }
+
+        .flight-price .price {
+            font-size: 1.8rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* Booking Page */
+        .booking-page {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+
+        .booking-steps {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .step {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .step-content {
+            padding-left: 40px;
+        }
+
+        .passenger-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .payment-method {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover, .payment-method.active {
+            border-color: var(--primary);
+            background: rgba(26, 115, 232, 0.05);
+        }
+
+        .payment-method i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .booking-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            align-self: start;
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .summary-total {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            padding: 20px 0;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-col ul li a {
+            color: #b0bec5;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-col ul li a:hover {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #b0bec5;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .flight-details {
+                gap: 15px;
+            }
+            
+            .booking-page {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .booking-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-btn {
+                grid-column: 1;
+            }
+            
+            .flight-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .flight-info {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .book-btn {
+                width: 100%;
+            }
+            
+            .passenger-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .logo {
+                font-size: 1.4rem;
+            }
+            
+            .auth-buttons .btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .hero {
+                padding: 40px 0;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .flight-details {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .flight-route {
+                padding: 15px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fas fa-plane"></i>
+                <span>Nivyan Triplink</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="nav-link active" data-page="home"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#" class="nav-link" data-page="destinations"><i class="fas fa-map-marker-alt"></i> Destinations</a></li>
+                    <li><a href="#" class="nav-link" data-page="flights"><i class="fas fa-plane-departure"></i> Flights</a></li>
+                    <li><a href="#" class="nav-link" data-page="deals"><i class="fas fa-percent"></i> Deals</a></li>
+                    <li><a href="#" class="nav-link" data-page="support"><i class="fas fa-headset"></i> Support</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <a href="#" class="btn btn-outline nav-link" data-page="login"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="#" class="btn btn-primary nav-link" data-page="register"><i class="fas fa-user-plus"></i> Register</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Home Page -->
+    <div id="home" class="page-container active">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container hero-content">
+                <h1>Travel the World with Nivyan Triplink</h1>
+                <p>Find the best flight deals to your dream destinations</p>
+                
+                <!-- Booking Widget -->
+                <div class="booking-widget">
+                    <div class="widget-header">
+                        <div class="trip-option active">Round Trip</div>
+                        <div class="trip-option">One Way</div>
+                        <div class="trip-option">Multi-City</div>
+                    </div>
+                    <form class="booking-form">
+                        <div class="form-group">
+                            <label for="from">From</label>
+                            <input type="text" id="from" class="form-control" placeholder="City or airport" value="New York (JFK)">
+                        </div>
+                        <div class="form-group">
+                            <label for="to">To</label>
+                            <input type="text" id="to" class="form-control" placeholder="City or airport" value="London (LHR)">
+                        </div>
+                        <div class="form-group">
+                            <label for="depart">Depart</label>
+                            <input type="date" id="depart" class="form-control" value="2023-10-15">
+                        </div>
+                        <div class="form-group">
+                            <label for="return">Return</label>
+                            <input type="date" id="return" class="form-control" value="2023-10-22">
+                        </div>
+                        <div class="form-group">
+                            <label for="travelers">Travelers</label>
+                            <select id="travelers" class="form-control">
+                                <option>1 Adult</option>
+                                <option selected>2 Adults</option>
+                                <option>2 Adults, 1 Child</option>
+                                <option>2 Adults, 2 Children</option>
+                                <option>3+ Travelers</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="class">Class</label>
+                            <select id="class" class="form-control">
+                                <option>Economy</option>
+                                <option>Premium Economy</option>
+                                <option selected>Business</option>
+                                <option>First Class</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary search-btn"><i class="fas fa-search"></i> Search Flights</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular Destinations -->
+        <section class="section">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Popular Destinations</h2>
+                    <p>Discover our most sought-after travel destinations with exclusive flight deals</p>
+                </div>
+                <div class="destinations">
+                    <div class="destination-card">
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Paris">
+                        </div>
+                        <div class="card-content">
+                            <h3>Paris, France</h3>
+                            <p>The City of Light with iconic landmarks and romantic ambiance</p>
+                            <div class="price">$499</div>
+                            <button class="btn btn-outline" style="border-color: var(--primary); color: var(--primary);">View Flights</button>
+                        </div>
+                    </div>
+                    
+                    <div class="destination-card">
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1549144511-f099e773c147?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="Tokyo">
+                        </div>
+                        <div class="card-content">
+                            <h3>Tokyo, Japan</h3>
+                            <p>Experience the blend of tradition and cutting-edge technology</p>
+                            <div class="price">$899</div>
+                            <button class="btn btn-outline" style="border-color: var(--primary); color: var(--primary);">View Flights</button>
+                        </div>
+                    </div>
+                    
+                    <div class="destination-card">
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Bali">
+                        </div>
+                        <div class="card-content">
+                            <h3>Bali, Indonesia</h3>
+                            <p>Tropical paradise with stunning beaches and vibrant culture</p>
+                            <div class="price">$699</div>
+                            <button class="btn btn-outline" style="border-color: var(--primary); color: var(--primary);">View Flights</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section features">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Why Choose Nivyan Triplink</h2>
+                    <p>We make air travel simple, affordable, and enjoyable</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-percent"></i>
+                        </div>
+                        <h3>Best Price Guarantee</h3>
+                        <p>Find the lowest prices for your flights or we'll refund the difference</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Secure Booking</h3>
+                        <p>Your personal and payment information is protected with 256-bit encryption</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h3>24/7 Support</h3>
+                        <p>Our travel experts are available around the clock to assist you</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-plane-circle-check"></i>
+                        </div>
+                        <h3>Flexible Changes</h3>
+                        <p>Easily modify your booking with our flexible change policies</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flight Listings -->
+        <section class="section flights">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Top Flight Deals</h2>
+                    <p>Amazing deals on popular routes</p>
+                </div>
+                
+                <div class="flight-card">
+                    <div class="flight-info">
+                        <div class="airline-logo">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="flight-details">
+                            <div class="flight-time">
+                                <div class="time">08:30</div>
+                                <div class="date">15 Oct</div>
+                                <div class="airport">JFK</div>
+                            </div>
+                            <div class="flight-route">
+                                <div class="route-duration">7h 15m</div>
+                            </div>
+                            <div class="flight-time">
+                                <div class="time">19:45</div>
+                                <div class="date">15 Oct</div>
+                                <div class="airport">LHR</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flight-price">
+                        <div class="price">$589</div>
+                        <button class="btn btn-primary book-flight">Book Now</button>
+                    </div>
+                </div>
+                
+                <div class="flight-card">
+                    <div class="flight-info">
+                        <div class="airline-logo">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="flight-details">
+                            <div class="flight-time">
+                                <div class="time">14:20</div>
+                                <div class="date">15 Oct</div>
+                                <div class="airport">JFK</div>
+                            </div>
+                            <div class="flight-route">
+                                <div class="route-duration">7h 55m</div>
+                            </div>
+                            <div class="flight-time">
+                                <div class="time">06:15</div>
+                                <div class="date">16 Oct</div>
+                                <div class="airport">CDG</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flight-price">
+                        <div class="price">$612</div>
+                        <button class="btn btn-primary book-flight">Book Now</button>
+                    </div>
+                </div>
+                
+                <div class="flight-card">
+                    <div class="flight-info">
+                        <div class="airline-logo">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="flight-details">
+                            <div class="flight-time">
+                                <div class="time">21:45</div>
+                                <div class="date">15 Oct</div>
+                                <div class="airport">JFK</div>
+                            </div>
+                            <div class="flight-route">
+                                <div class="route-duration">14h 20m</div>
+                            </div>
+                            <div class="flight-time">
+                                <div class="time">06:05</div>
+                                <div class="date">17 Oct</div>
+                                <div class="airport">HND</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flight-price">
+                        <div class="price">$879</div>
+                        <button class="btn btn-primary book-flight">Book Now</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Destinations Page -->
+    <div id="destinations" class="page-container">
+        <section class="section">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Popular Destinations</h2>
+                    <p>Explore our top travel destinations with exclusive flight deals</p>
+                </div>
+                <div class="destinations">
+                    <!-- Paris -->
+                    <div class="destination-card">
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Paris">
+                        </div>
+                        <div class="card-content">
+                            <h3>Paris, France</h3>
+                            <p>The City of Light with iconic landmarks and romantic ambiance</p>
+                            <div class="price">$499</div>
+                            <button class="btn btn-primary">View Flights</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tokyo -->
+                    <div class="destination-card">
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1549144511-f099e773c147?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="Tokyo">
+                        </div>
+                        <div class="card-content">
+                            <h3>Tokyo, Japan</h3>
+                            <p>Experience the blend of tradition and cutting-edge technology</p>
+                            <div class="price">$899</div>
+                            <button class="btn btn-primary">View Flights</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Bali -->
+                    <div class="destination-card">
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Bali">
+                        </div>
+                        <div class="card-content">
+                            <h3>Bali, Indonesia</h3>
+                            <p>Tropical paradise with stunning beaches and vibrant culture</p>
+                            <div class="price">$699</div>
+                            <button class="btn btn-primary">View Flights</button>
+                        </div>
+                    </div>
+                    
+                    <!-- New York -->
+                    <div class="destination-card">
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="New York">
+                        </div>
+                        <div class="card-content">
+                            <h3>New York, USA</h3>
+                            <p>The city that never sleeps with iconic skyline and attractions</p>
+                            <div class="price">$399</div>
+                            <button class="btn btn-primary">View Flights</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Rome -->
+                    <div class="destination-card">
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1396&q=80" alt="Rome">
+                        </div>
+                        <div class="card-content">
+                            <h3>Rome, Italy</h3>
+                            <p>Experience ancient history and world-renowned cuisine</p>
+                            <div class="price">$549</div>
+                            <button class="btn btn-primary">View Flights</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Sydney -->
+                    <div class="destination-card">
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Sydney">
+                        </div>
+                        <div class="card-content">
+                            <h3>Sydney, Australia</h3>
+                            <p>Beautiful harbor city with iconic opera house and beaches</p>
+                            <div class="price">$1099</div>
+                            <button class="btn btn-primary">View Flights</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Flights Page -->
+    <div id="flights" class="page-container">
+        <section class="section">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Available Flights</h2>
+                    <p>Find the perfect flight for your journey</p>
+                </div>
+                
+                <div class="flight-card">
+                    <div class="flight-info">
+                        <div class="airline-logo">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="flight-details">
+                            <div class="flight-time">
+                                <div class="time">08:30</div>
+                                <div class="date">15 Oct</div>
+                                <div class="airport">JFK</div>
+                            </div>
+                            <div class="flight-route">
+                                <div class="route-duration">7h 15m</div>
+                            </div>
+                            <div class="flight-time">
+                                <div class="time">19:45</div>
+                                <div class="date">15 Oct</div>
+                                <div class="airport">LHR</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flight-price">
+                        <div class="price">$589</div>
+                        <button class="btn btn-primary book-flight">Book Now</button>
+                    </div>
+                </div>
+                
+                <div class="flight-card">
+                    <div class="flight-info">
+                        <div class="airline-logo">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="flight-details">
+                            <div class="flight-time">
+                                <div class="time">14:20</div>
+                                <div class="date">15 Oct</div>
+                                <div class="airport">JFK</div>
+                            </div>
+                            <div class="flight-route">
+                                <div class="route-duration">7h 55m</div>
+                            </div>
+                            <div class="flight-time">
+                                <div class="time">06:15</div>
+                                <div class="date">16 Oct</div>
+                                <div class="airport">CDG</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flight-price">
+                        <div class="price">$612</div>
+                        <button class="btn btn-primary book-flight">Book Now</button>
+                    </div>
+                </div>
+                
+                <div class="flight-card">
+                    <div class="flight-info">
+                        <div class="airline-logo">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="flight-details">
+                            <div class="flight-time">
+                                <div class="time">21:45</div>
+                                <div class="date">15 Oct</div>
+                                <div class="airport">JFK</div>
+                            </div>
+                            <div class="flight-route">
+                                <div class="route-duration">14h 20m</div>
+                            </div>
+                            <div class="flight-time">
+                                <div class="time">06:05</div>
+                                <div class="date">17 Oct</div>
+                                <div class="airport">HND</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flight-price">
+                        <div class="price">$879</div>
+                        <button class="btn btn-primary book-flight">Book Now</button>
+                    </div>
+                </div>
+                
+                <div class="flight-card">
+                    <div class="flight-info">
+                        <div class="airline-logo">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="flight-details">
+                            <div class="flight-time">
+                                <div class="time">11:15</div>
+                                <div class="date">15 Oct</div>
+                                <div class="airport">JFK</div>
+                            </div>
+                            <div class="flight-route">
+                                <div class="route-duration">8h 05m</div>
+                            </div>
+                            <div class="flight-time">
+                                <div class="time">01:20</div>
+                                <div class="date">16 Oct</div>
+                                <div class="airport">FCO</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flight-price">
+                        <div class="price">$654</div>
+                        <button class="btn btn-primary book-flight">Book Now</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Deals Page -->
+    <div id="deals" class="page-container">
+        <section class="section">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Special Flight Deals</h2>
+                    <p>Exclusive offers for your next trip</p>
+                </div>
+                
+                <div class="destinations">
+                    <div class="destination-card">
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1590523278191-995cbcda646b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1392&q=80" alt="Barcelona">
+                        </div>
+                        <div class="card-content">
+                            <h3>Barcelona, Spain</h3>
+                            <p>Save 25% on flights to this vibrant Mediterranean city</p>
+                            <div class="price"><span style="text-decoration: line-through; color: var(--gray); margin-right: 10px;">$699</span> $524</div>
+                            <button class="btn btn-primary">Book Now</button>
+                        </div>
+                    </div>
+                    
+                    <div class="destination-card">
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1596445836561-991bcd39a86d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Dubai">
+                        </div>
+                        <div class="card-content">
+                            <h3>Dubai, UAE</h3>
+                            <p>Luxury destination at economy prices - 30% off</p>
+                            <div class="price"><span style="text-decoration: line-through; color: var(--gray); margin-right: 10px;">$1199</span> $839</div>
+                            <button class="btn btn-primary">Book Now</button>
+                        </div>
+                    </div>
+                    
+                    <div class="destination-card">
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1565967511849-76a60a516170?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80" alt="Bangkok">
+                        </div>
+                        <div class="card-content">
+                            <h3>Bangkok, Thailand</h3>
+                            <p>Experience exotic culture and cuisine - 40% off</p>
+                            <div class="price"><span style="text-decoration: line-through; color: var(--gray); margin-right: 10px;">$899</span> $539</div>
+                            <button class="btn btn-primary">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-title" style="margin-top: 60px;">
+                    <h2>Last Minute Deals</h2>
+                    <p>Great discounts for spontaneous travelers</p>
+                </div>
+                
+                <div class="flight-card" style="background: linear-gradient(to right, #fff8e1, #ffecb3);">
+                    <div class="flight-info">
+                        <div class="airline-logo" style="background: #ff9800; color: white;">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="flight-details">
+                            <div class="flight-time">
+                                <div class="time">Tomorrow</div>
+                                <div class="date">16 Oct</div>
+                                <div class="airport">JFK</div>
+                            </div>
+                            <div class="flight-route">
+                                <div class="route-duration">→</div>
+                            </div>
+                            <div class="flight-time">
+                                <div class="time">Next Week</div>
+                                <div class="date">23 Oct</div>
+                                <div class="airport">LHR</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flight-price">
+                        <div class="price" style="color: #d32f2f;">$399</div>
+                        <button class="btn btn-primary">Book Now</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Support Page -->
+    <div id="support" class="page-container">
+        <section class="section">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Customer Support</h2>
+                    <p>We're here to help you with any questions or concerns</p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <h3>Call Us</h3>
+                        <p>+1 (800) 555-1234</p>
+                        <p>Available 24/7</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3>Email Us</h3>
+                        <p>support@skywing.com</p>
+                        <p>Response within 1 hour</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3>Live Chat</h3>
+                        <p>Chat with our agents</p>
+                        <p>Available 6AM-12AM EST</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h3>FAQ</h3>
+                        <p>Find answers to common questions</p>
+                        <a href="#" style="color: var(--primary);">Browse FAQs</a>
+                    </div>
+                </div>
+                
+                <div class="section-title" style="margin-top: 60px;">
+                    <h2>Frequently Asked Questions</h2>
+                </div>
+                
+                <div class="feature-card" style="text-align: left; padding: 25px;">
+                    <h3 style="margin-bottom: 15px; color: var(--primary);">Booking & Reservations</h3>
+                    <div class="faq-item" style="margin-bottom: 20px;">
+                        <h4>How do I change or cancel my reservation?</h4>
+                        <p style="margin-top: 10px;">You can manage your booking through our website or mobile app. Log in to your account, go to "My Trips" and follow the instructions to make changes or cancellations.</p>
+                    </div>
+                    <div class="faq-item" style="margin-bottom: 20px;">
+                        <h4>What is your cancellation policy?</h4>
+                        <p style="margin-top: 10px;">Cancellation policies vary by fare type. Basic economy tickets are generally non-refundable, while standard economy and above can be canceled for a fee. Please check your ticket details for specific information.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Booking Page -->
+    <div id="booking" class="page-container">
+        <section class="section">
+            <div class="container booking-page">
+                <div class="booking-steps">
+                    <div class="step">
+                        <div class="step-title">
+                            <div class="step-number">1</div>
+                            <h3>Passenger Details</h3>
+                        </div>
+                        <div class="step-content">
+                            <form class="passenger-form">
+                                <div class="form-group">
+                                    <label>First Name</label>
+                                    <input type="text" class="form-control" placeholder="John">
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Name</label>
+                                    <input type="text" class="form-control" placeholder="Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" class="form-control" placeholder="john.doe@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone</label>
+                                    <input type="tel" class="form-control" placeholder="+1 (555) 123-4567">
+                                </div>
+                                <div class="form-group">
+                                    <label>Date of Birth</label>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Passport Number</label>
+                                    <input type="text" class="form-control" placeholder="AB1234567">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-title">
+                            <div class="step-number">2</div>
+                            <h3>Payment Method</h3>
+                        </div>
+                        <div class="step-content">
+                            <div class="payment-methods">
+                                <div class="payment-method active">
+                                    <i class="fab fa-cc-visa"></i>
+                                    <div>Visa</div>
+                                </div>
+                                <div class="payment-method">
+                                    <i class="fab fa-cc-mastercard"></i>
+                                    <div>Mastercard</div>
+                                </div>
+                                <div class="payment-method">
+                                    <i class="fab fa-cc-amex"></i>
+                                    <div>Amex</div>
+                                </div>
+                                <div class="payment-method">
+                                    <i class="fab fa-cc-paypal"></i>
+                                    <div>PayPal</div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 30px;">
+                                <div class="form-group">
+                                    <label>Card Number</label>
+                                    <input type="text" class="form-control" placeholder="1234 5678 9012 3456">
+                                </div>
+                                <div class="form-group">
+                                    <label>Cardholder Name</label>
+                                    <input type="text" class="form-control" placeholder="John Doe">
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                    <div class="form-group">
+                                        <label>Expiry Date</label>
+                                        <input type="text" class="form-control" placeholder="MM/YY">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>CVV</label>
+                                        <input type="text" class="form-control" placeholder="123">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-title">
+                            <div class="step-number">3</div>
+                            <h3>Confirm & Book</h3>
+                        </div>
+                        <div class="step-content">
+                            <div class="form-group">
+                                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                    <input type="checkbox" id="terms" style="width: auto;">
+                                    <label for="terms">I agree to the <a href="#" style="color: var(--primary);">Terms & Conditions</a> and <a href="#" style="color: var(--primary);">Privacy Policy</a></label>
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.2rem;">Complete Booking</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="booking-summary">
+                    <h3 style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee;">Booking Summary</h3>
+                    
+                    <div class="flight-card" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
+                        <div class="flight-info">
+                            <div class="airline-logo">
+                                <i class="fas fa-plane"></i>
+                            </div>
+                            <div class="flight-details">
+                                <div class="flight-time">
+                                    <div class="time">08:30</div>
+                                    <div class="airport">JFK</div>
+                                </div>
+                                <div class="flight-route">
+                                    <div class="route-duration">7h 15m</div>
+                                </div>
+                                <div class="flight-time">
+                                    <div class="time">19:45</div>
+                                    <div class="airport">LHR</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <div>Passengers (2)</div>
+                        <div>$1,178.00</div>
+                    </div>
+                    <div class="summary-item">
+                        <div>Taxes & Fees</div>
+                        <div>$142.50</div>
+                    </div>
+                    <div class="summary-item">
+                        <div>Service Fee</div>
+                        <div>$19.99</div>
+                    </div>
+                    
+                    <div class="summary-item summary-total">
+                        <div>Total</div>
+                        <div>$1,340.49</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Login Page -->
+    <div id="login" class="page-container">
+        <section class="section">
+            <div class="container" style="max-width: 500px;">
+                <div class="section-title">
+                    <h2>Login to Your Account</h2>
+                    <p>Access your bookings and preferences</p>
+                </div>
+                
+                <div class="booking-widget">
+                    <form>
+                        <div class="form-group">
+                            <label for="login-email">Email Address</label>
+                            <input type="email" id="login-email" class="form-control" placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" class="form-control" placeholder="Enter your password">
+                        </div>
+                        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <input type="checkbox" id="remember" style="width: auto;">
+                                <label for="remember">Remember me</label>
+                            </div>
+                            <a href="#" style="color: var(--primary);">Forgot password?</a>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                        </div>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <p>Don't have an account? <a href="#" class="nav-link" data-page="register" style="color: var(--primary);">Register</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Register Page -->
+    <div id="register" class="page-container">
+        <section class="section">
+            <div class="container" style="max-width: 600px;">
+                <div class="section-title">
+                    <h2>Create Your Account</h2>
+                    <p>Join thousands of travelers using Nivyan Triplink</p>
+                </div>
+                
+                <div class="booking-widget">
+                    <form>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" class="form-control" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" class="form-control" placeholder="john.doe@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" class="form-control" placeholder="+1 (555) 123-4567">
+                        </div>
+                        <div class="form-group">
+                            <label>Create Password</label>
+                            <input type="password" class="form-control" placeholder="Create a strong password">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            <input type="password" class="form-control" placeholder="Confirm your password">
+                        </div>
+                        <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <input type="checkbox" id="newsletter" style="width: auto;">
+                            <label for="newsletter">Subscribe to our newsletter for exclusive deals</label>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+                        </div>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <p>Already have an account? <a href="#" class="nav-link" data-page="login" style="color: var(--primary);">Login</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Nivyan Triplink</h3>
+                    <p>Your trusted partner for air travel. We provide the best flight deals and exceptional service to make your journey memorable.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Explore</h3>
+                    <ul>
+                        <li><a href="#" class="nav-link" data-page="home">Home</a></li>
+                        <li><a href="#" class="nav-link" data-page="destinations">Destinations</a></li>
+                        <li><a href="#" class="nav-link" data-page="flights">Flights</a></li>
+                        <li><a href="#" class="nav-link" data-page="deals">Special Offers</a></li>
+                        <li><a href="#">Travel Guides</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Information</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#" class="nav-link" data-page="support">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 301, Thai Station Building, Al Falah St, Abu Dhabi</li>
+                        <li><i class="fas fa-phone"></i> +971 565986256</li>
+                        <li><i class="fas fa-envelope"></i> info@nivyantriplink.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 Nivyan Triplink Airlines. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation between pages
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetPage = this.getAttribute('data-page');
+                
+                // Update active navigation
+                document.querySelectorAll('.nav-link').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Show target page
+                document.querySelectorAll('.page-container').forEach(page => {
+                    page.classList.remove('active');
+                });
+                document.getElementById(targetPage).classList.add('active');
+                
+                // Special case for booking page
+                if(targetPage === 'booking') {
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
+                }
+            });
+        });
+        
+        // Book flight buttons
+        document.querySelectorAll('.book-flight').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.nav-link').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                document.querySelector('.nav-link[data-page="booking"]').classList.add('active');
+                
+                document.querySelectorAll('.page-container').forEach(page => {
+                    page.classList.remove('active');
+                });
+                document.getElementById('booking').classList.add('active');
+                
+                // Scroll to top
+                document.body.scrollTop = 0;
+                document.documentElement.scrollTop = 0;
+            });
+        });
+        
+        // Trip type selection
+        document.querySelectorAll('.trip-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.trip-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // Payment method selection
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                document.querySelectorAll('.payment-method').forEach(m => {
+                    m.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // Set today's date as minimum for date inputs
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('depart').min = today;
+        document.getElementById('return').min = today;
+        
+        // Set return date to 7 days from today by default
+        const nextWeek = new Date();
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        const nextWeekFormatted = nextWeek.toISOString().split('T')[0];
+        document.getElementById('return').value = nextWeekFormatted;
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('home').classList.add('active');
+        });
+    </script>
+</body>
+</html>
